@@ -4,7 +4,7 @@ import multiprocessing as mp
 quick = False
 reservedcores = 2
 
-grid = [1,2,3,4,5,6,8,9,10,11,12,14,15,16,17,18,19,20,21,22,23,24,25]
+grid = [15,14,24,5,18,22,21,16,19,25,9,23,12,17,10,6,1,11,2,20,4,3,8]
 
 pool = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]
 
@@ -132,7 +132,7 @@ def dumb():
     limit = 1000000000
     while count < limit:
         if testall():
-            print(grid)
+            render()
             sys.exit(0)
         else:
             random.shuffle(grid)
@@ -526,7 +526,7 @@ def bruteworker(col2: list, tx):
                                         candidate = [set1[0],set3[0],set4[0],set5[0],set2[0],set3[1],set4[1],set5[1],set1[1],set2[1],set3[2],set4[2],set5[2],set1[2],set2[2],set3[3],set4[3],set5[3],set1[3],set2[3],set3[4],set4[4],set5[4]]
                                         if testrows(candidate):
                                             tx.send(candidate)
-                        count3 += 1
+                        #count3 += 1
                         #tx.send(f" {myname} completed {count3} of {size3} third-layer solutions at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
                 count1 += 1
                 tx.send(f" {myname} completed {count1} of {size1} second-layer solutions at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
@@ -534,4 +534,4 @@ def bruteworker(col2: list, tx):
         tx.send(f" {myname} completed {count2} of {size2} first-layer solutions at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 if __name__ == '__main__':
-    brute()
+    dumb()
