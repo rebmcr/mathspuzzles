@@ -71,22 +71,39 @@ def test10(candidate: list=grid) -> list:
         return False
 
 def testall(candidate: list=grid) -> bool:
-    if test1(candidate) and test2(candidate) and test3(candidate) and test4(candidate) and test5(candidate) and test6(candidate) and test7(candidate) and test8(candidate) and test9(candidate) and test10(candidate):
-        return True
-    else:
-        return False
+    # We do these in order of restrictiveness, so we can bail early
+    if test7(candidate):
+        if test6(candidate):
+            if test1(candidate):
+                if test8(candidate):
+                    if test2(candidate):
+                        if test3(candidate):
+                            if test5(candidate):
+                                if test9(candidate):
+                                    if test10(candidate):
+                                        if test4(candidate):
+                                            return True
+    return False
 
 def testrows(candidate: list=grid) -> bool:
-    if test1(candidate) and test2(candidate) and test3(candidate) and test4(candidate) and test5(candidate):
-        return True
-    else:
-        return False
+    # We do these in order of restrictiveness, so we can bail early
+    if test1(candidate):
+        if test2(candidate):
+            if test3(candidate):
+                if test5(candidate):
+                    if test4(candidate):
+                        return True
+    return False
 
 def testcols(candidate: list=grid) -> bool:
-    if test6(candidate) and test7(candidate) and test8(candidate) and test9(candidate) and test10(candidate):
-        return True
-    else:
-        return False
+    # We do these in order of restrictiveness, so we can bail early
+    if test7(candidate):
+        if test6(candidate):
+            if test8(candidate):
+                if test9(candidate):
+                    if test10(candidate):
+                        return True
+    return False
 
 def testid(id: int, candidate: list=grid) -> list:
     if id == 1:
@@ -480,6 +497,9 @@ def brute(mode: int=0):
 
 def bruteworker(col2: list, tx):
     myname = mp.current_process().name
+    size2 = len(col2)
+    count2 = 0
+    tx.send(f" {myname} received {size2} first-layer solutions at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     for set2 in col2:
         avoids = [7,13,set2[0],set2[1],set2[2],set2[3]]
         col1 = iterid(6, avoids)
@@ -491,9 +511,9 @@ def bruteworker(col2: list, tx):
                 avoids = [7,13,set2[0],set2[1],set2[2],set2[3],set1[0],set1[1],set1[2],set1[3]]
                 col3 = iterid(8, avoids)
                 if col3:
-                    size3 = len(col3)
-                    count3 = 0
-                    tx.send(f"  {myname} generated {size3} third-layer solutions at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+                    #size3 = len(col3)
+                    #count3 = 0
+                    #tx.send(f"  {myname} generated {size3} third-layer solutions at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
                     for set3 in col3:
                         avoids = [7,13,set2[0],set2[1],set2[2],set2[3],set1[0],set1[1],set1[2],set1[3],set3[0],set3[1],set3[2],set3[3],set3[4]]
                         col4 = iterid(9, avoids)
@@ -504,16 +524,14 @@ def bruteworker(col2: list, tx):
                                 if col5:
                                     for set5 in col5:
                                         candidate = [set1[0],set3[0],set4[0],set5[0],set2[0],set3[1],set4[1],set5[1],set1[1],set2[1],set3[2],set4[2],set5[2],set1[2],set2[2],set3[3],set4[3],set5[3],set1[3],set2[3],set3[4],set4[4],set5[4]]
-                                        if test1(candidate): # we have sets of valid columns, we can now test them against the rows, one by one, from most- to least-restrictive
-                                            if test2(candidate): # this way we can bail early, compared to testall(candidate)
-                                                if test3(candidate):
-                                                    if test5(candidate):
-                                                        if test4(candidate):
-                                                            tx.send(candidate)
+                                        if testrows(candidate):
+                                            tx.send(candidate)
                         count3 += 1
-                        tx.send(f" {myname} completed {size3} of {count3} second-layer solutions at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+                        #tx.send(f" {myname} completed {count3} of {size3} third-layer solutions at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
                 count1 += 1
-                tx.send(f" {myname} completed {size1} of {count1} second-layer solutions at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+                tx.send(f" {myname} completed {count1} of {size1} second-layer solutions at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        count2 += 1
+        tx.send(f" {myname} completed {count2} of {size2} first-layer solutions at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 if __name__ == '__main__':
     brute()
